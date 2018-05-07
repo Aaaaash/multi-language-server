@@ -1,0 +1,17 @@
+{
+  "name": "multi-language-server",
+  "version": "0.0.1",
+  "description": "language-server for php, javascript, go and more...",
+  "main": "index.js",
+  "author": "sakuraash",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "^4.11.1",
+    "express": "^4.16.3",
+    "intelephense": "^0.8.8",
+    "typescript": "^2.8.3",
+    "vscode-languageserver": "^4.1.2",
+    "vscode-ws-jsonrpc": "^0.0.1-alpha.5",
+    "ws": "^5.1.1"
+  }
+}
