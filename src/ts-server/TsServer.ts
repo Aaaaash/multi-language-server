@@ -6,7 +6,11 @@ import {
   InitializeParams,
   InitializeResult
 } from "vscode-languageserver";
-import { Intelephense } from "Intelephense";
+import * as rpc from 'vscode-ws-jsonrpc';
+
+import { Logger, LspClientLogger } from './language-server/logger';
+import { LspServer } from './language-server/lsp-server';
+import { LspClient, LspClientImpl } from './language-server/lsp-client';
 
 import elapsed from "../utils/elapsed";
 
@@ -17,59 +21,63 @@ export default class TsServer {
   private initializeResults: InitializeResult;
 
   constructor(connection: IConnection) {
+    console.log('initilize!');
     this.connection = connection;
-    this.documents = new TextDocuments();
-    this.workspaceRoot = null;
+    // this.documents = new TextDocuments();
+    // this.workspaceRoot = null;
 
-    this.documents.listen(this.connection);
+    // this.documents.listen(this.connection);
 
+    const lspClient = new LspClientImpl(connection);
+    const logger = new LspClientLogger(lspClient, 4);
+    const server: LspServer = new LspServer({
+        logger,
+        lspClient,
+        // tsserverPath: options.tsserverPath,
+        // tsserverLogFile: options.tsserverLogFile,
+        // tsserverLogVerbosity: options.tsserverLogVerbosity
+    });
     let initialisedAt;
 
-    this.connection.onInitialize((params: InitializeParams): Promise<
-      InitializeResult
-    > => {
-      initialisedAt = process.hrtime();
-      this.connection.console.info("Initialising");
-      const initOptions = {
-        storagePath: undefined,
-        logWriter: {
-          info: connection.console.info,
-          warn: connection.console.warn,
-          error: connection.console.error
-        },
-        clearCache: undefined
-      };
+    this.connection.onInitialize(server.initialize.bind(server));
+    this.connection.onDidOpenTextDocument(server.didOpenTextDocument.bind(server));
+    this.connection.onDidSaveTextDocument(server.didSaveTextDocument.bind(server));
+    this.connection.onDidCloseTextDocument(server.didCloseTextDocument.bind(server));
+    this.connection.onDidChangeTextDocument(server.didChangeTextDocument.bind(server));
 
-      return Intelephense.initialise(initOptions).then(() => {
-        Intelephense.onPublishDiagnostics(args => {
-          connection.sendDiagnostics(args);
-        });
-        connection.console.info(
-          `Initialised in ${elapsed(initialisedAt).toFixed()} ms`
-        );
-
-        this.initializeResults = {
-          capabilities: {
-            textDocumentSync: TextDocumentSyncKind.Incremental,
-            documentSymbolProvider: true,
-            workspaceSymbolProvider: true,
-            completionProvider: {
-              triggerCharacters: ["$", ">", ":", "\\", ".", "<", "/"]
-            },
-            signatureHelpProvider: {
-              triggerCharacters: ["(", ","]
-            },
-            definitionProvider: true,
-            documentFormattingProvider: true,
-            documentRangeFormattingProvider: true,
-            referencesProvider: true,
-            documentLinkProvider: { resolveProvider: true },
-            hoverProvider: true,
-            documentHighlightProvider: true
-          }
-        };
-        return this.initializeResults;
-      });
-    });
+    this.connection.onCodeAction(server.codeAction.bind(server));
+    this.connection.onCompletion(server.completion.bind(server));
+    this.connection.onCompletionResolve(server.completionResolve.bind(server));
+    this.connection.onDefinition(server.definition.bind(server));
+    this.connection.onDocumentFormatting(server.documentFormatting.bind(server));
+    this.connection.onDocumentHighlight(server.documentHighlight.bind(server));
+    this.connection.onDocumentSymbol(server.documentSymbol.bind(server));
+    this.connection.onExecuteCommand(server.executeCommand.bind(server));
+    this.connection.onHover(server.hover.bind(server));
+    this.connection.onReferences(server.references.bind(server));
+    this.connection.onRenameRequest(server.rename.bind(server));
+    this.connection.onSignatureHelp(server.signatureHelp.bind(server));
+    this.connection.onWorkspaceSymbol(server.workspaceSymbol.bind(server));
   }
+
+  public start() {
+    this.connection.listen();
+  }
+}
+
+
+function start(reader, writer) {
+  console.log('start!');
+  const connection = createConnection(reader, writer);
+  const server = new TsServer(connection);
+  server.start();
+  return server;
+}
+
+export function tsLaunch(socket) {
+  console.log(socket);
+  console.log('launch!');
+  const reader = new rpc.WebSocketMessageReader(socket);
+  const writer = new rpc.WebSocketMessageWriter(socket);
+  start(reader, writer);
 }

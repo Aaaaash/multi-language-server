@@ -7,10 +7,13 @@
   "license": "MIT",
   "dependencies": {
     "@types/express": "^4.11.1",
+    "command-exists": "^1.2.6",
+    "commander": "^2.15.1",
     "express": "^4.16.3",
     "intelephense": "^0.8.8",
     "typescript": "^2.8.3",
     "vscode-languageserver": "^4.1.2",
+    "vscode-uri": "^1.0.3",
     "vscode-ws-jsonrpc": "^0.0.1-alpha.5",
     "ws": "^5.1.1"
   }

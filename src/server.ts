@@ -4,6 +4,8 @@ import * as http from 'http';
 import * as url from 'url';
 import { Socket } from 'net';
 
+import { tsLaunch } from './ts-server/TsServer';
+
 const app = express();
 
 app.use('/', (req, res) => {
@@ -16,7 +18,7 @@ const wss = new ws.Server({ server });
 
 server.on('upgrade', handleUpgrade);
 
-function handleUpgrade(request: express.Request, socket: Socket, head) {
+function handleUpgrade(request, socket, head) {
   const pathname = request.url ? url.parse(request.url).pathname : undefined;
   wss.handleUpgrade(request, socket, head, (webSocket) => {
     const socketConnect = {
@@ -34,11 +36,16 @@ function handleUpgrade(request: express.Request, socket: Socket, head) {
 
     if (webSocket.readyState === webSocket.OPEN) {
       console.log(pathname);
+      if (pathname === '/php') {
+
+      } else if (pathname === '/ts') {
+        tsLaunch(socketConnect);
+      } else {
+        console.log('err!');
+      }
       // [`${pathname}Launch`](socketconnect);
     } else {
-      webSocket.on('open', () => {
-        console.log(pathname);
-      });
+      webSocket.on('open', () => tsLaunch(socket));
     }
   });
 }

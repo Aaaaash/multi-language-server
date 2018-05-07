@@ -90,6 +90,14 @@ bytes@3.0.0:
   version "3.0.0"
   resolved "http://registry.npm.taobao.org/bytes/download/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
 
+command-exists@^1.2.6:
+  version "1.2.6"
+  resolved "http://registry.npm.taobao.org/command-exists/download/command-exists-1.2.6.tgz#577f8e5feb0cb0f159cd557a51a9be1bdd76e09e"
+
+commander@^2.15.1:
+  version "2.15.1"
+  resolved "http://registry.npm.taobao.org/commander/download/commander-2.15.1.tgz#df46e867d0fc2aec66a34662b406a9ccafff5b0f"
+
 content-disposition@0.5.2:
   version "0.5.2"
   resolved "http://registry.npm.taobao.org/content-disposition/download/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
@@ -428,7 +436,7 @@ vscode-languageserver@^4.1.2:
     vscode-languageserver-protocol "^3.7.0"
     vscode-uri "^1.0.1"
 
-vscode-uri@^1.0.1:
+vscode-uri@^1.0.1, vscode-uri@^1.0.3:
   version "1.0.3"
   resolved "http://registry.npm.taobao.org/vscode-uri/download/vscode-uri-1.0.3.tgz#631bdbf716dccab0e65291a8dc25c23232085a52"
 
