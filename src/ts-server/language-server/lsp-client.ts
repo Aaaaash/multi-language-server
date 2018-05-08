@@ -20,6 +20,7 @@ export class LspClientImpl implements LspClient {
     }
 
     publishDiagnostics(args: lsp.PublishDiagnosticsParams): void {
+        console.log(args);
         this.connection.sendNotification(lsp.PublishDiagnosticsNotification.type, args);
     }
 

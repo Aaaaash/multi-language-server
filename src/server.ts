@@ -12,9 +12,12 @@ app.use('/', (req, res) => {
   res.send('hello world');
 });
 
-const server = app.listen(4000);
+const server = app.listen(5000);
 
-const wss = new ws.Server({ server });
+const wss = new ws.Server({
+  noServer: true,
+  perMessageDeflate: false,
+});
 
 server.on('upgrade', handleUpgrade);
 
@@ -35,7 +38,6 @@ function handleUpgrade(request, socket, head) {
     }
 
     if (webSocket.readyState === webSocket.OPEN) {
-      console.log(pathname);
       if (pathname === '/php') {
 
       } else if (pathname === '/ts') {

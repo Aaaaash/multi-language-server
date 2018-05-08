@@ -148,6 +148,8 @@ export class LspServer {
     public didOpenTextDocument(params: lsp.DidOpenTextDocumentParams): void {
         const path = uriToPath(params.textDocument.uri);
         this.logger.log('onDidOpenTextDocument', params, path);
+        console.log(`openedDocumentUris: ${this.openedDocumentUris}`);
+        console.log(`params.textDocument.uri: ${params.textDocument.uri}`);
         if (this.openedDocumentUris.get(params.textDocument.uri) !== undefined) {
             this.logger.log(`Cannot open already opened doc '${params.textDocument.uri}'.`);
             this.didChangeTextDocument({
